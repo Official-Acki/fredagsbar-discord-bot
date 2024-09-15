@@ -29,19 +29,34 @@ public class SlashCommandHandler
         //     Console.WriteLine(ex.Message);
         // }
         Console.WriteLine($"Received command: {command.Data.Name}");
+        Console.WriteLine("Received options:");
+        foreach (var item in command.Data.Options)
+        {
+            Console.WriteLine($"{item.Name}: {item.Value} ({item.Type})");
+        }
         switch (command.Data.Name)  {
             case "update-commands":
-                await command.RespondAsync("Updating commands...");
+                await command.RespondAsync("Updating commands...", ephemeral: true);
+                List<SlashCommandBuilder> builders = new List<SlashCommandBuilder>();
                 // Roulette
                 var rouletteCommand = new SlashCommandBuilder();
                 rouletteCommand.WithName("roulette");
                 rouletteCommand.WithDescription("Play a game of roulette.");
-                var options = new SlashCommandOptionBuilder();
-                options.AddOption("weighted", ApplicationCommandOptionType.Boolean, "Should the roulette be weighted?", false);
-                rouletteCommand.AddOptions(options);
+                rouletteCommand.AddOption("weighted", ApplicationCommandOptionType.Boolean, "Should the roulette be weighted?", false);
+                builders.Add(rouletteCommand);
+
+                // new-channel
+                var newChannelCommand = new SlashCommandBuilder();
+                newChannelCommand.WithName("new-channel");
+                newChannelCommand.WithDescription("Creates a new channel.");
+                newChannelCommand.AddOption("channel-name", ApplicationCommandOptionType.String, "The name of the channel.", true);
+                builders.Add(newChannelCommand);
                 try
                 {
-                    await guild.CreateApplicationCommandAsync(rouletteCommand.Build());
+                    foreach (var item in builders)
+                    {
+                        await guild.CreateApplicationCommandAsync(item.Build());
+                    }
                 }
                 catch (System.Exception ex)
                 {
@@ -56,16 +71,38 @@ public class SlashCommandHandler
                 owedCrates.Add(641719712882884638, 0.5f);
                 owedCrates.Add(313689155638919168, 1f);
                 float sum = 0;
-                Dictionary<ulong, float> converted = new Dictionary<ulong, float>(owedCrates.Count);
-                foreach (var item in owedCrates)
-                {
-                    sum += item.Value;
-                    converted.Add(item.Key, sum);
+                KeyValuePair<ulong, float> selected;
+                bool weighted = true;
+                if(command.Data.Options.Count > 0 && command.Data.Options.Any(x => x.Name == "weighted")) {
+                    weighted = ((bool) command.Data.Options.First(x => x.Name == "weighted").Value);
                 }
                 Random rnd = new Random();
-                var probability = rnd.NextDouble() * sum;
-                var selected = converted.SkipWhile(i => i.Value < probability).First();
+                if (weighted == true) {
+                    Dictionary<ulong, float> converted = new Dictionary<ulong, float>(owedCrates.Count);
+                    foreach (var item in owedCrates)
+                    {
+                        sum += item.Value;
+                        converted.Add(item.Key, sum);
+                    }
+                    var probability = rnd.NextDouble() * sum;
+                    selected = converted.SkipWhile(i => i.Value < probability).First();
+                } else {
+                    selected = owedCrates.ToArray()[(int)Math.Round(rnd.NextDouble() * owedCrates.Count())];
+                }
                 await command.RespondAsync($"{_client.GetUser(selected.Key).Mention} loooooostt, booohooo! ({Math.Round(owedCrates[selected.Key]/sum, 3)*100}%)");
+                break;
+            case "new-channel":
+                ChannelHandler channelHandler = new ChannelHandler(_client);
+                String ?name = command.Data.Options.First().Value.ToString();
+                if (name == null) return;
+                // var channel = channelHandler.CreateChannel(name);
+                Event newEvent = new Event(DateTime.Now, DateTime.Now, "Test", "Test", "Test");
+                // newEvent.ChannelId = channel;
+                Embed embed = newEvent.GetEmbed();
+                await command.Channel.SendMessageAsync("", embed: embed);
+                // SocketTextChannel textChannel = guild.GetTextChannel(channel);
+                // await textChannel.SendMessageAsync("", embed: embed);
+                await command.RespondAsync($"Channel {name} created with id {null}");
                 break;
             default:
                 break;
