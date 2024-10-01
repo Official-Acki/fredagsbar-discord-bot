@@ -1,0 +1,56 @@
+@startuml ER-diagram
+
+entity Event {
+    event_id: serial pk
+    --
+    name: VARCHAR
+    description: text
+    location: VARCHAR
+    startDateTime: DATETIME
+    endDateTime: DATETIME
+    channelId: BIGINT
+    creatorId: BIGINT fk
+
+    goingEmoji: VARCHAR
+    notGoingEmoji: VARCHAR
+
+    ' private List<ulong> _going;
+    ' private List<ulong> _notGoing;
+}
+
+entity Event_Person_Answer {
+    answer_id: serial pk
+    event_id: int fk
+    person_id: int fk
+    going: bool
+}
+hide Event_Person_Answer circle
+
+
+entity Person {
+    person_id: bigserial pk
+    --
+}
+
+Event -- Event_Person_Answer
+Event_Person_Answer -- Person
+
+entity BeerCase {
+
+}
+
+BeerCase - Person
+
+entity Channel {
+
+}
+
+entity Message {
+    
+}
+
+Channel - Event
+Message -- Channel
+
+
+@enduml
