@@ -1,9 +1,10 @@
-﻿using Discord;
+﻿using det_er_fredag.Command;
+using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 
 class Program {
-    private static DiscordSocketClient? _client;
+    public static DiscordSocketClient? _client;
 
     public static async Task Main() {
         var _config = new DiscordSocketConfig { MessageCacheSize = 100, GatewayIntents = GatewayIntents.All};
@@ -17,16 +18,19 @@ class Program {
         await _client.StartAsync();
 
 
-        SlashCommandHandler.Initialize(_client);
+        SlashCommandHandler.GetInstance().Initialize(_client);
 
         _client.MessageUpdated += MessageUpdated;
         _client.ReactionAdded += ReactionAdded;
         _client.MessageReceived += async (msg) => {
+            if (msg.Author.IsBot) {
+                return;
+            }
             if (msg.Content == "ping") {
                 await msg.Channel.SendMessageAsync("pong");
             }
-            
-            if (msg.Content.Contains("øl")) {
+
+            if (msg.Content.ToLower().Contains("øl")) {
                 await msg.Channel.SendMessageAsync("ØL:beer:, NOGEN DER SAGDE ØL:beer:, SKAL DER DRIKKES ØL???:beer:");
             }
         };

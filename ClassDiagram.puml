@@ -1,0 +1,92 @@
+@startuml Class diagram
+
+class Program
+
+package TimeHandler {
+    class TimeHandler {
+        - List<System.Timers.Timer> timers
+        - {static} Timehandler singleton
+        --
+        - TimeHandler()
+        + TimeHandler getInstance()
+        + void stop() //maybe
+        + boolean addDateTimeEvent(DateTime, Runnable)
+        - ElapsedEventHandler CreateEventHandler(Action)
+        - void CleanUpTimers()
+    }
+}
+
+package SlashCommand {
+    class SlashCommandHandler {
+        - {static} DiscordSocketClient _client
+        - HashMap<string, SlashCommand> commands
+        --
+        + {static} void Initialize()
+        - Task HandleCommand(SocketSlashCommand)
+    }
+
+    abstract class SlashCommand {
+        - string name
+        --
+        ~ void run(SocketSlashCommand)
+    }
+
+    class UpdateCommandsCommand
+
+    class CreateEventCommand
+
+    class RouletteCommand
+
+    ' class UpdateEventCommand
+
+    SlashCommandHandler *-- SlashCommand
+
+    SlashCommand <|-- UpdateCommandsCommand
+    SlashCommand <|-- CreateEventCommand
+    SlashCommand <|-- RouletteCommand
+}
+
+
+class ChannelHandler
+
+class FredagsbarHandler {
+    not now :)
+}
+
+package Events {
+    class EventHandler {
+        - {static} EventHandler singleton
+        --
+        - EventHandler()
+        + EventHandler getInstance()
+        + Event createEvent(...)
+        + Event getEvent()
+        ' updateEvent
+        + bool deleteEvent()
+    }
+
+    class Event {
+        - ulong _channelId
+        - DateTime _startDateTime
+        - DateTime _endDateTime
+        - string _name
+        - string _description
+        - string _location
+        - ulong _creatorId
+        - List<ulong> _going
+        - List<ulong> _notGoing
+        - string _goingEmoji
+        - string _notGoingEmoji
+        --
+        + Embed GetEmbed()
+    }
+
+    EventHandler *-- Event
+}
+
+class DatabaseController {
+
+}
+
+
+@enduml

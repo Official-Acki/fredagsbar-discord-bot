@@ -8,8 +8,8 @@ entity Event {
     location: VARCHAR
     startDateTime: DATETIME
     endDateTime: DATETIME
-    channelId: BIGINT
-    creatorId: BIGINT fk
+    channelId: int fk
+    creatorId: int fk
 
     goingEmoji: VARCHAR
     notGoingEmoji: VARCHAR
@@ -20,6 +20,7 @@ entity Event {
 
 entity Event_Person_Answer {
     answer_id: serial pk
+    --
     event_id: int fk
     person_id: int fk
     going: bool
@@ -28,29 +29,44 @@ hide Event_Person_Answer circle
 
 
 entity Person {
-    person_id: bigserial pk
+    person_id: serial pk
     --
+    discord_id: bigint unique
+    name: varchar
 }
 
 Event -- Event_Person_Answer
 Event_Person_Answer -- Person
 
 entity BeerCase {
-
+    beercase_id: serial pk
+    --
+    person_id: int fk
+    time: DATETIME
+    amount: float [(-1) - (1)]
 }
 
 BeerCase - Person
 
 entity Channel {
-
+    channel_id: serial pk
+    --
+    discord_id: bigint unique
+    name: varchar
 }
 
 entity Message {
-    
+    message_id: serial pk
+    --
+    discord_id: bigint unique
+    time: DATETIME
+    text: varchar
+    sender_id: int fk
 }
 
 Channel - Event
-Message -- Channel
+Channel -- Message
+Message -- Person
 
 
 @enduml
