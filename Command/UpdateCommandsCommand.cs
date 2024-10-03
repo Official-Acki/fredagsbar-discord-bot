@@ -5,14 +5,7 @@ using Discord.WebSocket;
 namespace det_er_fredag.Command;
 
 public class UpdateCommandsCommand : SlashCommand {
-    public UpdateCommandsCommand() : base("update-commands") {
-    }
-
-    internal override SlashCommandBuilder BuildCommand() {
-        var guildCommand = base.BuildCommand();
-        guildCommand.WithDescription("Update the commands.");
-        return guildCommand;
-    }
+    public UpdateCommandsCommand() : base("update-commands", "Update the commands.") {}
 
     async internal override void Run(SocketSlashCommand command) {
         var guild = Program._client.GetGuild(1278323048356773920); //TODO

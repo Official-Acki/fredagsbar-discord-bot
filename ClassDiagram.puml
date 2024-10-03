@@ -27,8 +27,11 @@ package SlashCommand {
 
     abstract class SlashCommand {
         - string name
+        - string description
         --
-        ~ void run(SocketSlashCommand)
+        ~ SlashCommand(string, string)
+        ~ {abstract} void run(SocketSlashCommand)
+        ~ {abstract} SlashCommandBuilder BuildCommand()
     }
 
     class UpdateCommandsCommand
@@ -37,13 +40,16 @@ package SlashCommand {
 
     class RouletteCommand
 
-    ' class UpdateEventCommand
+    class TestCommand
+
+    ' class UpdateEventCommand  --later
 
     SlashCommandHandler *-- SlashCommand
 
     SlashCommand <|-- UpdateCommandsCommand
     SlashCommand <|-- CreateEventCommand
     SlashCommand <|-- RouletteCommand
+    SlashCommand <|-- TestCommand
 }
 
 

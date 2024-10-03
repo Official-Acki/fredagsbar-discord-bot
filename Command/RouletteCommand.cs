@@ -5,12 +5,10 @@ using Discord.WebSocket;
 namespace det_er_fredag.Command;
 
 public class RouletteCommand : SlashCommand {
-    public RouletteCommand() : base("roulette") {
-    }
+    public RouletteCommand() : base("roulette", "Play a game of roulette.") {}
 
     internal override SlashCommandBuilder BuildCommand() {
         var rouletteCommand = base.BuildCommand();
-        rouletteCommand.WithDescription("Play a game of roulette.");
         rouletteCommand.AddOption("weighted", ApplicationCommandOptionType.Boolean, "Should the roulette be weighted?", false);
         return rouletteCommand;
     }

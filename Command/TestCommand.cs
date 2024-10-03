@@ -5,12 +5,10 @@ using Discord.WebSocket;
 namespace det_er_fredag.Command;
 
 public class TestCommand : SlashCommand {
-    public TestCommand() : base("test-command") {
-    }
+    public TestCommand() : base("test-command", "only for testing who knows what it does") {}
 
     internal override SlashCommandBuilder BuildCommand() {
         SlashCommandBuilder testCommand = base.BuildCommand();
-        testCommand.WithDescription("Creates a new channel.");
         testCommand.AddOption("channel-name", ApplicationCommandOptionType.String, "The name of the channel.", true);
         return testCommand;
     }
