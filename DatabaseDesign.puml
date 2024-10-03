@@ -1,72 +1,74 @@
-@startuml ER-diagram
+@startchen ER-diagram
 
 entity Event {
-    event_id: serial pk
-    --
-    name: VARCHAR
-    description: text
-    location: VARCHAR
-    startDateTime: DATETIME
-    endDateTime: DATETIME
-    channelId: int fk
-    creatorId: int fk
-
-    goingEmoji: VARCHAR
-    notGoingEmoji: VARCHAR
-
-    ' private List<ulong> _going;
-    ' private List<ulong> _notGoing;
+    Name
+    Description
+    Location
+    Time {
+        StartDateTime
+        EndDateTime
+    }
+    GoingEmoji
+    NotGoingEmoji
 }
 
-entity Event_Person_Answer {
-    answer_id: serial pk
-    --
-    event_id: int fk
-    person_id: int fk
-    going: bool
+relationship Answer {
+    IsGoing
 }
-hide Event_Person_Answer circle
 
+relationship Created {
+}
 
 entity Person {
-    person_id: serial pk
-    --
-    discord_id: bigint unique
-    name: varchar
+    Discord_id <<key>>
+    Name
 }
 
-Event -- Event_Person_Answer
-Event_Person_Answer -- Person
+Event -N- Answer
+Answer -M- Person
+
+Event -N- Created
+Created -1- Person
 
 entity BeerCase {
-    beercase_id: serial pk
-    --
-    person_id: int fk
-    time: DATETIME
-    amount: float [(-1) - (1)]
+    Time
+    Amount
 }
 
-BeerCase - Person
+relationship Owes {
+}
+
+BeerCase -1- Owes
+Owes -N- Person
 
 entity Channel {
-    channel_id: serial pk
-    --
-    discord_id: bigint unique
-    name: varchar
+    Discord_id <<key>>
+    Name
 }
 
 entity Message {
-    message_id: serial pk
-    --
-    discord_id: bigint unique
-    time: DATETIME
-    text: varchar
-    sender_id: int fk
+    Discord_id <<key>>
+    Time
+    Text
 }
 
-Channel - Event
-Channel -- Message
-Message -- Person
+relationship Has {
+}
+
+Channel -1- Has
+Has -1- Event
+
+relationship Sent {
+}
+
+Person -1- Sent
+Sent -N- Message
+
+relationship In {
+}
+
+Message -N- In
+In -1- Channel
 
 
-@enduml
+@endchen
