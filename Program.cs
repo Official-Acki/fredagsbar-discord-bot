@@ -7,7 +7,7 @@ class Program {
     public static DiscordSocketClient? _client;
 
     public static async Task Main() {
-        var _config = new DiscordSocketConfig { MessageCacheSize = 100, GatewayIntents = GatewayIntents.All};
+        var _config = new DiscordSocketConfig { MessageCacheSize = 100, GatewayIntents = GatewayIntents.All, UseInteractionSnowflakeDate = false};
         _client = new DiscordSocketClient(_config);
 
         _client.Log += Log;

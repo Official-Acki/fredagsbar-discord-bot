@@ -3,34 +3,34 @@ using Discord.WebSocket;
 
 namespace det_er_fredag.Command;
 
-public class CratesCommands : SlashCommand {
-    public CratesCommands() : base("crates","Command for crates") {}
+public class CrateCommand : SlashCommand {
+    public CrateCommand() : base("crates","Command for crates") {}
 
     internal override SlashCommandBuilder BuildCommand() {
-        var cratesCommand = base.BuildCommand();
-        cratesCommand.AddOption(
+        var crateCommand = base.BuildCommand();
+        crateCommand.AddOption(
             new SlashCommandOptionBuilder()
                 .WithName("list")
-                .WithDescription("lists crates owed")
+                .WithDescription("Lists crates owed")
                 .WithType(ApplicationCommandOptionType.SubCommand))
         .AddOption(
             new SlashCommandOptionBuilder()
                 .WithName("add")
-                .WithDescription("adds specified amounts of crates to user")
+                .WithDescription("Adds specified amounts of crates to user")
                 .WithType(ApplicationCommandOptionType.SubCommand)
                 .AddOption("amount", ApplicationCommandOptionType.Number, "Amount of crates to add", isRequired:true)
-                .AddOption("user", ApplicationCommandOptionType.User, "user to assign crates", isRequired: true)
+                .AddOption("user", ApplicationCommandOptionType.User, "User to assign crates", isRequired: true)
         )
         .AddOption(
             new SlashCommandOptionBuilder()
                 .WithName("remove")
-                .WithDescription("removes crates")
+                .WithDescription("Removes crates")
                 .WithType(ApplicationCommandOptionType.SubCommand)
                 .AddOption("amount", ApplicationCommandOptionType.Number, "Amount of crates to remove", isRequired:true)
-                .AddOption("user", ApplicationCommandOptionType.User, "user to assign crates", isRequired: true)
+                .AddOption("user", ApplicationCommandOptionType.User, "User to assign crates", isRequired: true)
         );
         
-        return cratesCommand;
+        return crateCommand;
     }
 
     internal override void Run(SocketSlashCommand command)
