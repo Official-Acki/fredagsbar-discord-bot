@@ -38,8 +38,8 @@ entity BeerCase {
 relationship Owes {
 }
 
-BeerCase -1- Owes
-Owes -N- Person
+BeerCase -N- Owes
+Owes -1- Person
 
 entity Channel {
     Discord_id <<key>>
