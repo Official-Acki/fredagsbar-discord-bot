@@ -12,7 +12,7 @@ public class SlashCommandHandler {
         AddCommand(new UpdateCommandsCommand());
         AddCommand(new RouletteCommand());
         AddCommand(new TestCommand());
-        AddCommand(new CrateCommand());
+        AddCommand(new BeerCaseCommand());
     }
 
     public static SlashCommandHandler GetInstance() {

@@ -12,7 +12,7 @@ class Program {
 
         _client.Log += Log;
 
-        var token = File.ReadAllText("token.txt");
+        var token = Environment.GetEnvironmentVariable("BOT_TOKEN");
 
         await _client.LoginAsync(TokenType.Bot, token);
         await _client.StartAsync();
@@ -36,20 +36,19 @@ class Program {
         };
         _client.Ready += () => 
         {
-            var guild = _client.GetGuild(1278323048356773920);
+            var guild = _client.GetGuild(ulong.Parse(Environment.GetEnvironmentVariable("GUILD_ID") ?? "1278323048356773920"));
             // Don't uncomment, only to be used once when needed.
-            // var guildCommand = new SlashCommandBuilder();
-            // guildCommand.WithName("update-commands");
-            // guildCommand.WithDescription("Update the commands.");
-            // try
-            // {
-            //     guild.CreateApplicationCommandAsync(guildCommand.Build());
-                
-            // }
-            // catch (System.Exception ex)
-            // {
-            //     Console.WriteLine(ex.Message);
-            // }
+            var guildCommand = new SlashCommandBuilder();
+            guildCommand.WithName("update-commands");
+            guildCommand.WithDescription("Update the commands.");
+            try
+            {
+                guild.CreateApplicationCommandAsync(guildCommand.Build());
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
             Console.WriteLine("Bot is connected!");
             return Task.CompletedTask;
         };

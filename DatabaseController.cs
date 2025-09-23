@@ -1,8 +1,8 @@
-using MySqlConnector;
+using Npgsql;
 
 class DatabaseController {
     readonly string connectionString;
-    readonly MySqlConnection connection;
+    readonly NpgsqlConnection connection;
     private static DatabaseController _singleton = new();
 
     private DatabaseController() {
@@ -10,12 +10,12 @@ class DatabaseController {
         string UserID = Environment.GetEnvironmentVariable("DB_USER") ?? "root";
         string Password = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "example";
         string Database = Environment.GetEnvironmentVariable("DB_NAME") ?? "beerbotdb";
-        var builder = new MySqlConnectionStringBuilder {
-            Server = Server,
-            UserID = UserID,
+        var builder = new NpgsqlConnectionStringBuilder {
+            Host = Server,
+            Username = UserID,
             Password = Password,
             Database = Database,
-            // SslMode = MySqlSslMode.None,
+            SslMode = SslMode.Prefer,
         };
 
 
@@ -25,8 +25,8 @@ class DatabaseController {
         connection = new(connectionString);
     }
 
-    public MySqlDataReader? Select(MySqlCommand command) {
-        MySqlDataReader? reader = null;
+    public NpgsqlDataReader? Select(NpgsqlCommand command) {
+        NpgsqlDataReader? reader = null;
         try {
             connection.Open();
             reader = command.ExecuteReader();
@@ -42,7 +42,7 @@ class DatabaseController {
 
     // TODO add return id of inserted row
 
-    public void Query(MySqlCommand command) {
+    public void Query(NpgsqlCommand command) {
         try {
             connection.Open();
             command.ExecuteNonQuery();
@@ -55,7 +55,7 @@ class DatabaseController {
         }
     }
 
-    public MySqlConnection GetConnection() {
+    public NpgsqlConnection GetConnection() {
         return connection;
     }
 

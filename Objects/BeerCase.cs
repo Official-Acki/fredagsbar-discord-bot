@@ -1,14 +1,54 @@
+using Npgsql;
+
 namespace det_er_fredag.Objects;
 
-class BeerCase {
+class BeerCase : DatabaseObj<BeerCase>
+{
     int? dbId;
-    DateTime time;
+    // Currently owed
     float amount;
-    Person debtor;
+    // Given history
+    private class GivenBeerCase
+    {
+        public int PersonId { get; set; }
+        public DateTime GivenAt { get; set; }
+        public float Amount { get; set; }
 
-    public BeerCase(DateTime time, float amount, Person debtor) {
+        public GivenBeerCase(int personId, DateTime givenAt, float amount)
+        {
+            PersonId = personId;
+            GivenAt = givenAt;
+            Amount = amount;
+        }
+    }
+    List<GivenBeerCase> givenCases = new();
+    int? personId;
+    DateTime time;
+
+    public BeerCase(DateTime time, float amount, Person debtor)
+    {
         this.time = time;
         this.amount = amount;
-        this.debtor = debtor;
+        this.personId = debtor.dbId;
+    }
+
+    public void CreateObj()
+    {
+        throw new NotImplementedException();
+    }
+
+    public static List<BeerCase> ReadToObjs(NpgsqlDataReader mySqlDataReader)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void DeleteObj()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void UpdateObj()
+    {
+        throw new NotImplementedException();
     }
 }

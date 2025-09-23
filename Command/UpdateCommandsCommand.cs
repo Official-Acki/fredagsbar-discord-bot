@@ -8,7 +8,7 @@ public class UpdateCommandsCommand : SlashCommand {
     public UpdateCommandsCommand() : base("update-commands", "Update the commands.") {}
 
     async internal override void Run(SocketSlashCommand command) {
-        SocketGuild guild = Program._client.GetGuild(1278323048356773920); //TODO
+        SocketGuild guild = Program._client.GetGuild(ulong.Parse(Environment.GetEnvironmentVariable("GUILD_ID") ?? "1278323048356773920"));
         //update-commands
         await command.RespondAsync("Updating commands...", ephemeral: true);
         await guild.DeleteApplicationCommandsAsync();
@@ -22,7 +22,7 @@ public class UpdateCommandsCommand : SlashCommand {
                 Console.WriteLine(ex.Message);
                 return;
             }
-        }  
-        await command.FollowupAsync("Commands updated.", ephemeral: true);
+        }
+        await command.ModifyOriginalResponseAsync(msg => msg.Content = "Commands updated!!!");
     }
 }
