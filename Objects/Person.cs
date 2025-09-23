@@ -3,53 +3,55 @@ using Npgsql;
 namespace det_er_fredag.Objects;
 
 public class Person : DatabaseObj<Person> {
-    public readonly int? dbId;
-    readonly ulong discord_id;
-    string name;
+    public int id { get; }
+    public string username { get; }
+    public UInt64 discord_id { get; }
+    public DateTime created_at { get; }
 
 
-    public Person(ulong discord_id, string name) {
+    public Person(int id, string username, UInt64 discord_id, DateTime created_at)
+    {
+        this.id = id;
+        this.username = username;
         this.discord_id = discord_id;
-        this.name = name;
-    }
-
-    public Person(int dbId, ulong discord_id, string name) : this(discord_id, name) {
-        this.dbId = dbId;
+        this.created_at = created_at;
     }
 
 
+    // Handled through website
+    // public void CreateObj() {
+    //     string query = "INSERT INTO Person (discord_id, name) VALUES (@discord_id, @name)";
+    //     NpgsqlCommand command = new(query, DatabaseController.GetInstance().GetConnection());
+    //     command.Parameters.AddWithValue("@discord_id", discord_id);
+    //     command.Parameters.AddWithValue("@name", name);
+    //     DatabaseController.GetInstance().Query(command);
+    // }
     public void CreateObj() {
-        string query = "INSERT INTO Person (discord_id, name) VALUES (@discord_id, @name)";
-        NpgsqlCommand command = new(query, DatabaseController.GetInstance().GetConnection());
-        command.Parameters.AddWithValue("@discord_id", discord_id);
-        command.Parameters.AddWithValue("@name", name);
-        DatabaseController.GetInstance().Query(command);
+        throw new Exception("Not allowed to create a person. Handle through website");
     }
 
-    public static List<Person> ReadToObjs(NpgsqlDataReader mySqlDataReader) {
+    public static List<Person> ReadToObjs(NpgsqlDataReader sqlDataReader)
+    {
         throw new NotImplementedException();
     }
 
     public void UpdateObj() {
-        if (dbId == null) {
-            throw new Exception("Cannot update object that has not been created in the database");
-        }
-        string query = "UPDATE Person SET discord_id = @discord_id, name = @name WHERE id = @id";
+        string query = "UPDATE Person SET username = @username, discord_id = @discord_id WHERE id = @id";
         NpgsqlCommand command = new(query, DatabaseController.GetInstance().GetConnection());
         command.Parameters.AddWithValue("@discord_id", discord_id);
-        command.Parameters.AddWithValue("@name", name);
-        command.Parameters.AddWithValue("@id", dbId);
+        command.Parameters.AddWithValue("@username", username);
+        command.Parameters.AddWithValue("@id", id);
         DatabaseController.GetInstance().Query(command);
     }
 
     public void DeleteObj() {
         throw new Exception("Not allowed to delete a person");
-        if (dbId == null) {
+        if (id == null) {
             throw new Exception("Cannot delete object that has not been created in the database");
         }
         string query = "DELETE FROM Person WHERE id = @id";
         NpgsqlCommand command = new(query, DatabaseController.GetInstance().GetConnection());
-        command.Parameters.AddWithValue("@id", dbId);
+        command.Parameters.AddWithValue("@id", id);
         DatabaseController.GetInstance().Query(command);
     }
 }
