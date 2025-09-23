@@ -20,7 +20,13 @@
             "dotnetRunMessages": false,
             "launchBrowser": false,
             "environmentVariables": {
-                "DOTNET_ENVIRONMENT": "Production"
+                "DOTNET_ENVIRONMENT": "Production",
+                "GUILD_ID": "1278323048356773920",
+                "BOT_TOKEN": "<BOT_TOKEN>",
+                "DB_HOST": "localhost",
+                "DB_USER": "postgres",
+                "DB_PASSWORD": "postgres",
+                "DB_NAME": "<DB_NAME>",
             }
         }
     }
