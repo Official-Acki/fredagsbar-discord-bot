@@ -1,54 +1,37 @@
-using Npgsql;
+using Dapper;
 
 namespace det_er_fredag.Objects;
 
-class BeerCase : DatabaseObj<BeerCase>
+public class CasesOwed: IDbModel<CasesOwed>
 {
-    int? dbId;
-    // Currently owed
-    float amount;
-    // Given history
-    private class GivenBeerCase
-    {
-        public int PersonId { get; set; }
-        public DateTime GivenAt { get; set; }
-        public float Amount { get; set; }
+    public int person_id { get; }
+    public float cases { get; }
+    public DateTime updated_at { get; }
 
-        public GivenBeerCase(int personId, DateTime givenAt, float amount)
-        {
-            PersonId = personId;
-            GivenAt = givenAt;
-            Amount = amount;
-        }
-    }
-    List<GivenBeerCase> givenCases = new();
-    int? personId;
-    DateTime time;
-
-    public BeerCase(DateTime time, float amount, Person debtor)
+    public static CasesOwed ReadObj(int person_id)
     {
-        this.time = time;
-        this.amount = amount;
-        this.personId = debtor.dbId;
+        return DatabaseController.GetInstance().db.Query<CasesOwed>("SELECT person_id, cases, updated_at from cases_owed WHERE person_id = @person_id", new { person_id = person_id }).First();
     }
 
-    public void CreateObj()
+    public static IEnumerable<CasesOwed> GetAll()
     {
-        throw new NotImplementedException();
+        return DatabaseController.GetInstance().db.Query<CasesOwed>("SELECT person_id, cases, updated_at from cases_owed").AsList();
     }
+}
 
-    public static List<BeerCase> ReadToObjs(NpgsqlDataReader mySqlDataReader)
+public class CasesGiven : IDbModel<CasesGiven>
+{
+    public int person_id { get; }
+    public DateTime given_at { get; }
+    public float cases { get; }
+
+    public static CasesGiven ReadObj(int id)
     {
-        throw new NotImplementedException();
+        return DatabaseController.GetInstance().db.Query<CasesGiven>("SELECT person_id, given_at, cases from cases_given WHERE person_id = @person_id", new { person_id = id }).First();
     }
-
-    public void DeleteObj()
+    
+    public static IEnumerable<CasesGiven> GetAll()
     {
-        throw new NotImplementedException();
-    }
-
-    public void UpdateObj()
-    {
-        throw new NotImplementedException();
+        return DatabaseController.GetInstance().db.Query<CasesGiven>("SELECT person_id, given_at, cases from cases_given").AsList();
     }
 }

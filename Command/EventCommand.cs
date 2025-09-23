@@ -6,7 +6,7 @@ namespace det_er_fredag.Command;
 
 public class EventCommand : SlashCommand {
     public EventCommand() : base("event", "Commad for events") {
-        throw new NotImplementedException();
+        return;
     }
 
     internal override void Run(SocketSlashCommand command) {

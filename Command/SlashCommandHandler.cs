@@ -9,10 +9,17 @@ public class SlashCommandHandler {
     private static SlashCommandHandler _singleton = new();
 
     private SlashCommandHandler() {
-        AddCommand(new UpdateCommandsCommand());
-        AddCommand(new RouletteCommand());
-        AddCommand(new TestCommand());
-        AddCommand(new BeerCaseCommand());
+        // AddCommand(new UpdateCommandsCommand());
+        // AddCommand(new RouletteCommand());
+        // AddCommand(new TestCommand());
+        // AddCommand(new BeerCaseCommand());
+        // Get all classes that inherit from SlashCommand and add them
+        AppDomain.CurrentDomain.GetAssemblies()
+            .SelectMany(a => a.GetTypes())
+            .Where(t => t.IsSubclassOf(typeof(SlashCommand)) && !t.IsAbstract)
+            .Select(t => (SlashCommand)Activator.CreateInstance(t))
+            .ToList()
+            .ForEach(AddCommand);
     }
 
     public static SlashCommandHandler GetInstance() {

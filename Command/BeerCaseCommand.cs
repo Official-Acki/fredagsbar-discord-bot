@@ -1,6 +1,9 @@
-﻿using det_er_fredag.Objects;
+﻿using Dapper;
+using det_er_fredag.Objects;
 using Discord;
 using Discord.WebSocket;
+using System.Data.Common;
+using System.Linq;
 
 namespace det_er_fredag.Command;
 
@@ -9,11 +12,13 @@ public class BeerCaseCommand : SlashCommand {
 
     internal override SlashCommandBuilder BuildCommand() {
         var caseCommand = base.BuildCommand();
-        caseCommand.AddOption(
+        caseCommand
+        .AddOption(
             new SlashCommandOptionBuilder()
                 .WithName("list")
                 .WithDescription("Lists cases owed")
-                .WithType(ApplicationCommandOptionType.SubCommand))
+                .WithType(ApplicationCommandOptionType.SubCommand)
+                .AddOption("user", ApplicationCommandOptionType.User, "User to list cases for", isRequired: false))
         .AddOption(
             new SlashCommandOptionBuilder()
                 .WithName("add")
@@ -51,9 +56,35 @@ public class BeerCaseCommand : SlashCommand {
         }
     }
 
-    private async void ListCases(SocketSlashCommand command) {
+    private async void ListCases(SocketSlashCommand command)
+    {
         await command.RespondAsync("Listing cases", ephemeral: true);
-        BeerCase.ReadToObjs(DatabaseController.GetInstance().Select(new("SELECT * FROM cases_given", DatabaseController.GetInstance().GetConnection())));
+        
+        // Get the "list" subcommand
+        var listSubcommand = command.Data.Options.FirstOrDefault(x => x.Name == "list");
+        if (listSubcommand?.Options != null && listSubcommand.Options.Any())
+        {
+            // Check if user option is provided
+            var userOption = listSubcommand.Options.FirstOrDefault(x => x.Name == "user");
+            if (userOption != null)
+            {
+                SocketUser? user = (SocketUser?)userOption.Value;
+                if (user == null)
+                {
+                    await command.FollowupAsync("User not found", ephemeral: true);
+                    return;
+                }
+                Person person = Person.ReadObj((long)user.Id);
+                Console.WriteLine(person);
+                CasesOwed casesOwed = CasesOwed.ReadObj(person.id);
+                await command.FollowupAsync($"{user.Username} owes {casesOwed.cases} cases", ephemeral: true);
+            }
+        }
+        else
+        {
+            // List all cases when no user is specified
+            Console.WriteLine("Listing all cases");
+        }
     }
 
     private async void AddCases(SocketSlashCommand command) {

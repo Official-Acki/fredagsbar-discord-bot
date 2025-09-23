@@ -31,8 +31,8 @@ public class TestCommand : SlashCommand {
         await command.RespondAsync("Test command ran");
         ulong personId = command.User.Id;
         string personName = command.User.Username;
-        Person person = new(personId, personName);
-        person.CreateObj();
+        // Person person = new(0, personName, (long)personId, DateTime.Now);
+        // person.CreateObj();
         await command.FollowupAsync("Person created");
     }
 }
