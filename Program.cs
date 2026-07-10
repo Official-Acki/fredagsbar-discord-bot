@@ -1,85 +1,37 @@
-﻿using det_er_fredag.Command;
+﻿using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Discord;
-using Discord.Commands;
 using Discord.WebSocket;
+using Microsoft.Extensions.Configuration;
+using Discord.Interactions;
 
-class Program {
-    public static DiscordSocketClient? _client;
+var builder = Host.CreateApplicationBuilder(args);
 
-    public static async Task Main() {
-        var _config = new DiscordSocketConfig { MessageCacheSize = 100, GatewayIntents = GatewayIntents.All, UseInteractionSnowflakeDate = false};
-        _client = new DiscordSocketClient(_config);
+builder.Configuration.AddEnvironmentVariables();
 
-        _client.Log += Log;
+var token = builder.Configuration["BOT_TOKEN"] ?? throw new InvalidOperationException("No bot token in env.");
 
-        var token = File.ReadAllText("token.txt");
+builder.Services.AddSingleton(new DiscordSocketConfig
+{
+	MessageCacheSize = 100,
+	GatewayIntents = GatewayIntents.GuildMembers | GatewayIntents.MessageContent | GatewayIntents.AllUnprivileged,
+	UseInteractionSnowflakeDate = false
+});
 
-        await _client.LoginAsync(TokenType.Bot, token);
-        await _client.StartAsync();
+builder.Services.AddSingleton<DiscordSocketClient>();
 
+builder.Services.AddSingleton(new InteractionServiceConfig
+{
+	DefaultRunMode = RunMode.Async,
+	UseCompiledLambda = true
+});
 
-        SlashCommandHandler.GetInstance().Initialize(_client);
+builder.Services.AddSingleton(sp =>
+    new InteractionService(
+        sp.GetRequiredService<DiscordSocketClient>(),
+        sp.GetRequiredService<InteractionServiceConfig>()));
 
-        _client.MessageUpdated += MessageUpdated;
-        _client.ReactionAdded += ReactionAdded;
-        _client.MessageReceived += async (msg) => {
-            if (msg.Author.IsBot) {
-                return;
-            }
-            if (msg.Content == "ping") {
-                await msg.Channel.SendMessageAsync("pong");
-            }
+builder.Services.AddHostedService<BotWorker>();
 
-            if (msg.Content.ToLower().Contains("øl")) {
-                await msg.Channel.SendMessageAsync("ØL:beer:, NOGEN DER SAGDE ØL:beer:, SKAL DER DRIKKES ØL???:beer:");
-            }
-        };
-        _client.Ready += () => 
-        {
-            var guild = _client.GetGuild(1278323048356773920);
-            // Don't uncomment, only to be used once when needed.
-            // var guildCommand = new SlashCommandBuilder();
-            // guildCommand.WithName("update-commands");
-            // guildCommand.WithDescription("Update the commands.");
-            // try
-            // {
-            //     guild.CreateApplicationCommandAsync(guildCommand.Build());
-                
-            // }
-            // catch (System.Exception ex)
-            // {
-            //     Console.WriteLine(ex.Message);
-            // }
-            Console.WriteLine("Bot is connected!");
-            return Task.CompletedTask;
-        };
-
-        CommandService commandService = new CommandService();
-        
-
-        // Block this task until the program is closed.
-        await Task.Delay(-1);
-    }
-
-
-    private static Task Log(LogMessage msg) {
-        Console.WriteLine(msg.ToString());
-        return Task.CompletedTask;
-    }
-
-    private static async Task MessageUpdated(Cacheable<IMessage, ulong> before, SocketMessage after, ISocketMessageChannel channel)
-    {
-        // If the message was not in the cache, downloading it will result in getting a copy of `after`.
-        Console.WriteLine($"{before.Value}");
-        var message = await before.GetOrDownloadAsync();  
-        // Console.WriteLine($"{message.Reactions.Count} -> {after.Reactions.Count}");
-        Console.WriteLine($"{message.Content} -> {after.Content}");
-        // Re cache the message
-        await message.Channel.GetMessageAsync(message.Id);
-    }
-
-    private static async Task ReactionAdded(Cacheable<IUserMessage, ulong> cacheable1, Cacheable<IMessageChannel, ulong> cacheable2, SocketReaction reaction)
-    {
-        Console.WriteLine($"{reaction.Emote.Name} -> {reaction.User.Value.Username}");
-    }
-}
+var host = builder.Build();
+await host.RunAsync();
