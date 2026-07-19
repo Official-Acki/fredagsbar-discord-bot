@@ -53,13 +53,28 @@ public sealed class BotWorker(
 	// Events
 	private async Task Ready()
 	{
-		await _interactions.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
+		try
+		{
+			await _interactions.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
+		}
+		catch (Exception e)
+		{
+			_logger.LogError(e.Message);
+			return;
+		}
 
 		var testGuildId = _config.GetValue<ulong?>("BOT_GUILD_ID");
-		if (testGuildId.HasValue)
-			await _interactions.RegisterCommandsToGuildAsync(testGuildId.Value);
-		// else
-		// 	await _interactions.RegisterCommandsGloballyAsync();
+		try
+		{
+			if (testGuildId.HasValue)
+				await _interactions.RegisterCommandsToGuildAsync(testGuildId.Value);
+			// else
+			// 	await _interactions.RegisterCommandsGloballyAsync();
+		}
+		catch (Exception e)
+		{
+			_logger.LogError(e.Message);
+		}
 
 		_logger.LogInformation("Slash commands registered.");
 	}
