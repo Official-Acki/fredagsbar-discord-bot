@@ -4,7 +4,7 @@ using Discord;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Discord.Interactions;
-using det_er_fredag.BackendApi;
+using Fredagsbar.Bot.BackendApi;
 
 var builder = Host.CreateApplicationBuilder(args);
 

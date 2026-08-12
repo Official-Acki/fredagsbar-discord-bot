@@ -1,9 +1,9 @@
 using System.Net;
 using System.Net.Http.Json;
-using det_er_fredag.BackendApi.DTO;
+using Fredagsbar.Shared.DTO;
 using Microsoft.Extensions.Logging;
 
-namespace det_er_fredag.BackendApi;
+namespace Fredagsbar.Bot.BackendApi;
 
 public class BackendClient(ILogger<BackendClient> logger, HttpClient http)
 {

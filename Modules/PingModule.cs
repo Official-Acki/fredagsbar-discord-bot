@@ -1,6 +1,6 @@
 using Discord.Interactions;
 
-namespace det_er_fredag.Modules;
+namespace Fredagsbar.Bot.Modules;
 
 public class PingModule : InteractionModuleBase<SocketInteractionContext>
 {

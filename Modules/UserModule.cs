@@ -1,10 +1,10 @@
-using det_er_fredag.BackendApi;
+using Fredagsbar.Bot.BackendApi;
 using Discord;
 using Discord.Interactions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace det_er_fredag.Modules;
+namespace Fredagsbar.Bot.Modules;
 
 public class UserModule(ILogger<UserModule> logger, IConfiguration config, BackendClient client) : InteractionModuleBase<SocketInteractionContext>
 {
