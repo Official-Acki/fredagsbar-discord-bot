@@ -11,9 +11,12 @@ public class BackendClient(ILogger<BackendClient> logger, HttpClient http)
 	private readonly HttpClient _http = http;
 
 	// User
-	public async Task<int> UserGetAsync(int? id)
+	public async Task<UserDto?> UserGetAsync(ulong id)
 	{
-		return await _http.GetFromJsonAsync<int>($"users/{id}");
+		var response = await _http.GetAsync($"users/{id}");
+		if (response.StatusCode == HttpStatusCode.NotFound) return null;
+		response.EnsureSuccessStatusCode();
+		return await response.Content.ReadFromJsonAsync<UserDto>();
 	}
 
 	public async Task<UserCreateDto?> UserCreateDtoAsync(UserCreateDto req, CancellationToken ct = default)
